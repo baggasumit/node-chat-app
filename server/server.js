@@ -3,6 +3,8 @@ const http = require('http');
 const express = require('express');
 const socketIO = require('socket.io');
 
+const { generateMessage } = require('./utils/message');
+
 const publicPath = path.join(__dirname, '../public');
 
 const port = process.env.PORT || 3000;
@@ -22,13 +24,30 @@ io.on('connection', (socket) => {
   //   createdAt: 123,
   // });
 
+  // Send only to the socket connection user
+  socket.emit(
+    'newMessage',
+    generateMessage('Admin', 'Welcome to the Chat app')
+  );
+
+  // Send to everyone excluding the socket connection user
+  socket.broadcast.emit(
+    'newMessage',
+    generateMessage('Admin', 'New user joined')
+  );
+
   socket.on('createMessage', (message) => {
     console.log('create message', message);
-    io.emit('newMessage', {
-      from: message.from,
-      text: message.text,
-      createdAt: new Date().getTime(),
-    });
+
+    // Send to everyone including yourself
+    io.emit('newMessage', generateMessage(message.from, message.text));
+
+    // Send to everyone excluding yourself
+    // socket.broadcast.emit('newMessage', {
+    //   from: message.from,
+    //   text: message.text,
+    //   createdAt: new Date().getTime(),
+    // });
   });
 
   socket.on('disconnect', () => {
