@@ -1,0 +1,20 @@
+{
+  "extends": "eslint:recommended",
+  "env": {
+    "es6": true,
+    "browser": true,
+    "node": true,
+    "mocha": true
+  },
+  "rules": {
+    "func-names": ["error", "never"],
+    "no-plusplus": "off",
+    "prefer-arrow-callback": 0,
+    "wrap-iife": 0,
+    "no-console": "off"
+  },
+  "globals": {
+    "moment": true,
+    "io": true
+  }
+}

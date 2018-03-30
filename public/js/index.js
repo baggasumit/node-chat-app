@@ -1,32 +1,28 @@
-const socket = io(); // eslint-disable-line no-undef
+const socket = io();
 
 socket.on('connect', () => {
   console.log('Connected to server');
-
-  // socket.emit('createMessage', {
-  //   from: 'SumitB',
-  //   text: 'Hey, this is Sumit',
-  // });
 });
 
 socket.on('newMessage', (msg) => {
-  console.log('New Message', msg);
+  const formattedTime = moment(msg.createdAt).format('hh:mm a');
   const $messages = document.querySelector('#messages');
   const $message = document.createElement('li');
-  $message.innerText = `${msg.from}: ${msg.text}`;
+  $message.innerText = `${msg.from} ${formattedTime}: ${msg.text}`;
   $messages.appendChild($message);
 });
 
 socket.on('newLocationMessage', (locationMsg) => {
+  const formattedTime = moment(locationMsg.createdAt).format('hh:mm a');
   const $messages = document.querySelector('#messages');
   const $message = document.createElement('li');
-
   const $link = document.createElement('a');
+
   $link.setAttribute('target', '_blank');
   $link.innerText = 'My Current Location';
   $link.href = locationMsg.url;
 
-  $message.innerHTML = `${locationMsg.from}: `;
+  $message.innerHTML = `${locationMsg.from} ${formattedTime}: `;
   $message.appendChild($link);
 
   $messages.appendChild($message);

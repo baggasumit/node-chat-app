@@ -8,7 +8,7 @@ describe('generateMessage', () => {
     const text = 'This is your admin';
     const msg = generateMessage(from, text);
 
-    expect(typeof msg.createdAt).toBe('number');
+    expect(typeof msg.createdAt).toBe('object');
     expect(msg).toMatchObject({
       from,
       text,
@@ -24,7 +24,7 @@ describe('generateLocationMessage', () => {
     const msg = generateLocationMessage(from, latitude, longitude);
 
     const url = `https://www.google.com/maps/?q=-21.455,-54.123`;
-    expect(typeof msg.createdAt).toBe('number');
+    expect(typeof msg.createdAt).toBe('object');
     expect(msg).toMatchObject({
       from,
       url,
