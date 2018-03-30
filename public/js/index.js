@@ -50,19 +50,26 @@ document
   });
 
 const locationButton = document.querySelector('#send-location');
-locationButton.addEventListener('click', () => {
+locationButton.addEventListener('click', function() {
   if (!navigator.geolocation) {
     return alert('Geolocation not supported by your browser');
   }
 
+  this.disabled = true;
+  this.innerText = 'Sending Location ...';
+
   navigator.geolocation.getCurrentPosition(
     (position) => {
+      this.disabled = false;
+      this.innerText = 'Send Location';
       socket.emit('createLocationMessage', {
         latitude: position.coords.latitude,
         longitude: position.coords.longitude,
       });
     },
     () => {
+      this.disabled = false;
+      this.innerText = 'Send Location';
       alert('Unable to fetch location');
     }
   );
