@@ -15,6 +15,7 @@
   },
   "globals": {
     "moment": true,
-    "io": true
+    "io": true,
+    "Mustache": true
   }
 }

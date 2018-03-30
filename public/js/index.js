@@ -7,25 +7,26 @@ socket.on('connect', () => {
 socket.on('newMessage', (msg) => {
   const formattedTime = moment(msg.createdAt).format('hh:mm a');
   const $messages = document.querySelector('#messages');
-  const $message = document.createElement('li');
-  $message.innerText = `${msg.from} ${formattedTime}: ${msg.text}`;
-  $messages.appendChild($message);
+  const template = document.querySelector('#message-template').innerHTML;
+  const html = Mustache.render(template, {
+    text: msg.text,
+    from: msg.from,
+    createdAt: formattedTime,
+  });
+  $messages.insertAdjacentHTML('beforeend', html);
 });
 
 socket.on('newLocationMessage', (locationMsg) => {
   const formattedTime = moment(locationMsg.createdAt).format('hh:mm a');
   const $messages = document.querySelector('#messages');
-  const $message = document.createElement('li');
-  const $link = document.createElement('a');
-
-  $link.setAttribute('target', '_blank');
-  $link.innerText = 'My Current Location';
-  $link.href = locationMsg.url;
-
-  $message.innerHTML = `${locationMsg.from} ${formattedTime}: `;
-  $message.appendChild($link);
-
-  $messages.appendChild($message);
+  const template = document.querySelector('#location-message-template')
+    .innerHTML;
+  const html = Mustache.render(template, {
+    from: locationMsg.from,
+    url: locationMsg.url,
+    createdAt: formattedTime,
+  });
+  $messages.insertAdjacentHTML('beforeend', html);
 });
 
 socket.on('disconnect', () => {
