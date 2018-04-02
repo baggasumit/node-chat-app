@@ -1,7 +1,41 @@
 const socket = io();
 
+function scrollToBottom() {
+  const $messages = document.querySelector('#messages');
+  if (
+    $messages.clientHeight + $messages.scrollTop + 200 >=
+    $messages.scrollHeight
+  ) {
+    $messages.scrollTop = $messages.scrollHeight;
+    console.log('Should scroll');
+  }
+}
+
+function getParams(query) {
+  if (!query) {
+    return {};
+  }
+
+  return (/^[?#]/.test(query) ? query.slice(1) : query)
+    .split('&')
+    .reduce((params, param) => {
+      let [key, value] = param.split('=');
+      params[key] = value ? decodeURIComponent(value.replace(/\+/g, ' ')) : '';
+      return params;
+    }, {});
+}
+
 socket.on('connect', () => {
   console.log('Connected to server');
+  const params = getParams(window.location.search);
+  socket.emit('join', params, function(err) {
+    if (err) {
+      alert(err);
+      window.location.href = '/';
+    } else {
+      console.log('No error');
+    }
+  });
 });
 
 socket.on('newMessage', (msg) => {
@@ -14,6 +48,7 @@ socket.on('newMessage', (msg) => {
     createdAt: formattedTime,
   });
   $messages.insertAdjacentHTML('beforeend', html);
+  scrollToBottom();
 });
 
 socket.on('newLocationMessage', (locationMsg) => {
@@ -27,10 +62,21 @@ socket.on('newLocationMessage', (locationMsg) => {
     createdAt: formattedTime,
   });
   $messages.insertAdjacentHTML('beforeend', html);
+  scrollToBottom();
 });
 
 socket.on('disconnect', () => {
   console.log('Disconnected from server');
+});
+
+socket.on('updateUserList', (users) => {
+  console.log('Users list', users);
+  const template = document.querySelector('#user-list-template').innerHTML;
+  const renderedUserList = Mustache.render(template, {
+    users,
+  });
+  const $userList = document.querySelector('#users');
+  $userList.innerHTML = renderedUserList;
 });
 
 document
