@@ -51,10 +51,14 @@ io.on('connection', (socket) => {
   });
 
   socket.on('createMessage', (message) => {
-    console.log('create message', message);
+    const user = users.getUser(socket.id);
 
-    // Send to everyone including yourself
-    io.emit('newMessage', generateMessage(message.from, message.text));
+    if (user && isRealString(message.text)) {
+      // Send to everyone including yourself
+      io
+        .to(user.room)
+        .emit('newMessage', generateMessage(user.name, message.text));
+    }
 
     // Send to everyone excluding yourself
     // socket.broadcast.emit('newMessage', {
@@ -65,11 +69,16 @@ io.on('connection', (socket) => {
   });
 
   socket.on('createLocationMessage', (coords) => {
-    // Send to everyone including yourself
-    io.emit(
-      'newLocationMessage',
-      generateLocationMessage('Admin', coords.latitude, coords.longitude)
-    );
+    const user = users.getUser(socket.id);
+    if (user) {
+      // Send to everyone including yourself
+      io
+        .to(user.room)
+        .emit(
+          'newLocationMessage',
+          generateLocationMessage(user.name, coords.latitude, coords.longitude)
+        );
+    }
   });
 
   socket.on('disconnect', () => {

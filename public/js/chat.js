@@ -87,7 +87,6 @@ document
     const message = $messageInput.value;
     $messageInput.value = '';
     socket.emit('createMessage', {
-      from: 'User',
       text: message,
     });
   });
